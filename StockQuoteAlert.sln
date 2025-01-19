@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockQuoteAlert", "StockQuoteAlert\StockQuoteAlert.csproj", "{06A1AE7A-7B5E-44AA-815B-20705C7D4967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A624298A-D9E4-4BF1-9141-72DE1CE67D85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockQuoteAlert.Models", "StockQuoteAlert.Models\StockQuoteAlert.Models.csproj", "{A2701BB3-71F9-490D-9463-19A777390072}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockQuoteAlert.Services", "StockQuoteAlert.Services\StockQuoteAlert.Services.csproj", "{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +21,21 @@ Global
 		{06A1AE7A-7B5E-44AA-815B-20705C7D4967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06A1AE7A-7B5E-44AA-815B-20705C7D4967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06A1AE7A-7B5E-44AA-815B-20705C7D4967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2701BB3-71F9-490D-9463-19A777390072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2701BB3-71F9-490D-9463-19A777390072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2701BB3-71F9-490D-9463-19A777390072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2701BB3-71F9-490D-9463-19A777390072}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{06A1AE7A-7B5E-44AA-815B-20705C7D4967} = {A624298A-D9E4-4BF1-9141-72DE1CE67D85}
+		{A2701BB3-71F9-490D-9463-19A777390072} = {A624298A-D9E4-4BF1-9141-72DE1CE67D85}
+		{10FC7B22-43E1-4E6A-8E4B-1A3F1248B5C0} = {A624298A-D9E4-4BF1-9141-72DE1CE67D85}
 	EndGlobalSection
 EndGlobal
