@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace StockQuoteAlert.Services.StockAPI
 {
     public class BrapiAPIService : IStockAPIService
     {
-        public async Task GetStockPrice(string ticker)
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        private readonly IConfiguration _config;
+
+        public BrapiAPIService(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
-            // TODO: Connect to Brapi API
+            _httpClientFactory = httpClientFactory;
+            _config = config;
+        }
+
+        public async Task<decimal> GetStockPriceAsync(string ticker)
+        {
+            var client = _httpClientFactory.CreateClient("BrapiHttpClient");
+            var token = _config.GetValue<string>("BrapiApi:Key");
+
+            var response = await client.GetFromJsonAsync<BrapiAPIResponse>($"{ticker}?token={token}");
+
+            return response.Results.First().RegularMarketPrice;
         }
     }
 }

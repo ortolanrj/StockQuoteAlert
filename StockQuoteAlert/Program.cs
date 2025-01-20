@@ -3,15 +3,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using StockQuoteAlert.Services.Email;
+using StockQuoteAlert.Services.StockAPI;
 
 var builder = new ConfigurationBuilder();
 
 builder.SetBasePath(Directory.GetCurrentDirectory())
-          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddJsonFile("appsettings.user.json", optional: true, reloadOnChange: true);  
 
-// Configuring basic logging
+var configuration = builder.Build();
+
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Build())
+    .ReadFrom.Configuration(configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .CreateLogger();
@@ -19,16 +22,16 @@ Log.Logger = new LoggerConfiguration()
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
-        var configuration = context.Configuration;
-
-        services.AddSingleton<IEmailService, EmailService>();
-
         // Configuring an instance of a HttpClient for the Brapi Stock API
         services.AddHttpClient("BrapiHttpClient", httpClient =>
         {
             httpClient.BaseAddress = new Uri(configuration.GetValue<string>("BrapiApi:BaseURL"));
             httpClient.DefaultRequestHeaders.Add("User-Agent", "StockQuoteAlert");
         });
+
+        services.AddSingleton<IEmailService, EmailService>();
+        services.AddSingleton<IStockAPIService, BrapiAPIService>();
+        services.AddSingleton<IConfiguration>(configuration);
     })
     .UseSerilog()
     .Build();

@@ -13,4 +13,8 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StockQuoteAlert.Models\StockQuoteAlert.Models.csproj" />
+  </ItemGroup>
+
 </Project>
