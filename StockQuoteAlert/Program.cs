@@ -29,12 +29,15 @@ var host = Host.CreateDefaultBuilder()
             httpClient.DefaultRequestHeaders.Add("User-Agent", "StockQuoteAlert");
         });
 
-        services.AddSingleton<IEmailService, EmailService>();
+        services.AddSingleton<IEmailService, GmailSmtpService>();
         services.AddSingleton<IStockAPIService, BrapiAPIService>();
         services.AddSingleton<IConfiguration>(configuration);
+
+        services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
+        services.Configure<EmailOptions>(configuration.GetSection("Email"));
     })
     .UseSerilog()
     .Build();
 
-var svc = ActivatorUtilities.CreateInstance<EmailService>(host.Services);
-svc.SendEmail();
+var svc = ActivatorUtilities.CreateInstance<GmailSmtpService>(host.Services);
+svc.SendEmail(true);
