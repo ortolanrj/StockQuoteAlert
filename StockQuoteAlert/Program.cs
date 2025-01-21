@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using StockQuoteAlert.Services.Email;
+using StockQuoteAlert.Services.Runner;
 using StockQuoteAlert.Services.StockAPI;
 
 var builder = new ConfigurationBuilder();
@@ -29,7 +30,7 @@ var host = Host.CreateDefaultBuilder()
             httpClient.DefaultRequestHeaders.Add("User-Agent", "StockQuoteAlert");
         });
 
-        services.AddSingleton<IEmailService, GmailSmtpService>();
+        services.AddSingleton<IEmailService, SmtpService>();
         services.AddSingleton<IStockAPIService, BrapiAPIService>();
         services.AddSingleton<IConfiguration>(configuration);
 
@@ -39,5 +40,5 @@ var host = Host.CreateDefaultBuilder()
     .UseSerilog()
     .Build();
 
-var svc = ActivatorUtilities.CreateInstance<GmailSmtpService>(host.Services);
-svc.SendEmail(true);
+var svc = ActivatorUtilities.CreateInstance<CommandLineRunner>(host.Services);
+svc.Run();

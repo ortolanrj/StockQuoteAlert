@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 
 namespace StockQuoteAlert.Services.Email;
 
-public class GmailSmtpService : IEmailService
+public class SmtpService : IEmailService
 {
-    private readonly ILogger<GmailSmtpService> _log;
+    private readonly ILogger<SmtpService> _log;
 
     private readonly IOptions<SmtpOptions> _smtpOptions;
 
@@ -17,7 +17,7 @@ public class GmailSmtpService : IEmailService
 
     private readonly EmailAccount receiver;
 
-    public GmailSmtpService(ILogger<GmailSmtpService> log, 
+    public SmtpService(ILogger<SmtpService> log, 
                             IOptions<SmtpOptions> smtpOptions, 
                             IOptions<EmailOptions> emailOptions)
     {
@@ -28,31 +28,30 @@ public class GmailSmtpService : IEmailService
         receiver = new EmailAccount(_emailOptions.Value.Receiver.Name, _emailOptions.Value.Receiver.Address);
     }
 
-    public void SendEmail(bool isResistance)
+    public void SendEmail(bool overResistance, Stock stock)
     {
-        var email = BuildEmailMessage(isResistance);
+        var email = BuildEmailMessage(overResistance, stock);
 
         using (var smtp = new SmtpClient())
         {
             smtp.Connect(_smtpOptions.Value.Host, _smtpOptions.Value.Port, false);
             smtp.Authenticate(_smtpOptions.Value.Username, _smtpOptions.Value.Password);
-
             smtp.Send(email);
 
             _log.LogInformation($"Um email para {receiver.EmailAdress} foi enviado às {DateTime.Now}.");
-
+            
             smtp.Disconnect(true);
         }
     }
 
-    private MimeMessage BuildEmailMessage(bool isResistance)
+    private MimeMessage BuildEmailMessage(bool overResistance, Stock stock)
     {
         var email = new MimeMessage();
 
         email.From.Add(new MailboxAddress(sender.Name, sender.EmailAdress));
         email.To.Add(new MailboxAddress(receiver.Name, receiver.EmailAdress));
 
-        var resistanceOrSupport = isResistance 
+        var resistanceOrSupport = overResistance
                                     ? "a resistência" 
                                     : "o suporte";
 
@@ -62,8 +61,8 @@ public class GmailSmtpService : IEmailService
 
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
-            Text = $"<b>O preço da ação {} rompeu {resistanceOrSupport}.</b><br>" +
-                   $"Recomendamos a respectiva {(isResistance ? "venda" : "compra")} do ativo."
+            Text = $"<b>O preço da ação {stock.Ticker} rompeu {resistanceOrSupport}.</b><br>" +
+                   $"Recomendamos a respectiva {(overResistance ? "venda" : "compra")} do ativo."
         };
 
         return email;

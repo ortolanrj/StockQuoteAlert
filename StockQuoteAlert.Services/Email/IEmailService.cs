@@ -2,6 +2,6 @@
 {
     public interface IEmailService
     {
-        void SendEmail(bool isResistance);
+        void SendEmail(bool overResistance, Stock stock);
     }
 }
