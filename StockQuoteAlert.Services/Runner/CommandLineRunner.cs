@@ -53,6 +53,10 @@ public class CommandLineRunner : IRunner
             {
                 _emailService.SendEmail(false, stock);
             }
+            else
+            {
+                Console.WriteLine("Não houve variação do preço acima ou abaixo dos limites estabelecidos.");
+            }
         } else
         {
             throw new Exception("Ocurred an error in the API call response.");
