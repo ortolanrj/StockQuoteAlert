@@ -14,6 +14,7 @@ builder.SetBasePath(Directory.GetCurrentDirectory())
 
 var configuration = builder.Build();
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 // Configuring logging to stay in "/logs/log-DateOfDay.txt"
 Log.Logger = new LoggerConfiguration()
@@ -29,7 +30,6 @@ var host = Host.CreateDefaultBuilder()
         services.AddHttpClient("BrapiHttpClient", httpClient =>
         {
             httpClient.BaseAddress = new Uri(configuration.GetValue<string>("BrapiApi:BaseURL"));
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "StockQuoteAlert");
         });
 
         services.AddSingleton<IEmailService, SmtpService>();

@@ -1,17 +1,17 @@
 ﻿public class Stock
 {
-    public decimal MaxPrice { get; set; }
+    public decimal SellPrice { get; set; }
     
-    public decimal MinPrice { get; set; }
+    public decimal BuyPrice { get; set; }
     
     public string Ticker { get; set; }
 
     public decimal ActualPrice { get; set; }
 
-    public Stock(string ticker, decimal maxPrice, decimal minPrice)
+    public Stock(string ticker, decimal sellPrice, decimal buyPrice)
     {
        Ticker = ticker;
-       MaxPrice = maxPrice;
-       MinPrice = minPrice;
+       SellPrice = sellPrice;
+       BuyPrice = buyPrice;
     }
 }

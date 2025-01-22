@@ -43,7 +43,6 @@ namespace StockQuoteAlert.Services.StockAPI
 
                 _log.LogInformation(MessageSuccessStockAPIRequest);
                 return brapiResponse?.Results.First().RegularMarketPrice;
-                
             }
             catch (Exception ex)
             {

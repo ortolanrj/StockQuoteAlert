@@ -29,9 +29,9 @@ public class SmtpService : IEmailService
         Receiver = new EmailAccount(_emailOptions.Receiver.Name, _emailOptions.Receiver.Address);
     }
 
-    public void SendEmail(bool overResistance, Stock stock)
+    public void SendEmail(bool overSellPrice, Stock stock)
     {
-        var email = BuildEmailMessage(overResistance, stock);
+        var email = BuildEmailMessage(overSellPrice, stock);
 
         using (var smtp = new SmtpClient())
         {
@@ -57,18 +57,19 @@ public class SmtpService : IEmailService
                                     ? "o preço de venda" 
                                     : "o preço de compra";
 
-        var subject = $"Atenção! A ação rompeu {sellOrBuyPrice}.";
+        var subject = $"Atenção! A ação {stock.Ticker} rompeu {sellOrBuyPrice}.";
 
+        // Formatting the price to BRL representation
         var formattedAmount = stock.ActualPrice.ToString("C2", new CultureInfo("pt-BR"));
 
         email.Subject = subject;
 
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
-            Text = $"Olá! <br>Percebemos que a ação {stock.Ticker} ultrapassou {sellOrBuyPrice}.<br>" +
-                   $"Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>" +
-                   $"O preço da ação hoje está em {formattedAmount}.<br><br>" +
-                   $"Tenha um bom dia!"
+            Text = $"<p>Olá!</p> <br>Percebemos que a ação {stock.Ticker} ultrapassou {sellOrBuyPrice}.<br>" +
+                   $"<p>Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>" +
+                   $"O preço da ação agora está em {formattedAmount}.</p><br>" +
+                   $"<p>Tenha um bom dia!</p>"
         };
 
         return email;

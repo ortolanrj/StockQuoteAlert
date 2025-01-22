@@ -21,10 +21,10 @@ public class CommandLineRunner : IRunner
         string[] args = Environment.GetCommandLineArgs();
 
         var ticker = args[1];
-        var maxPrice = args[2];
-        var minPrice = args[3];
+        var sellPrice = args[2];
+        var buyPrice = args[3];
 
-        Stock stock = new(ticker, decimal.Parse(maxPrice), decimal.Parse(minPrice));
+        Stock stock = new(ticker, decimal.Parse(sellPrice), decimal.Parse(buyPrice));
 
         RunFromTimeToTime(stock);
     }
@@ -45,11 +45,11 @@ public class CommandLineRunner : IRunner
         if (price.HasValue) {
             stock.ActualPrice = price.Value;
 
-            if (price > stock.MaxPrice)
+            if (stock.ActualPrice > stock.SellPrice)
             {
                 _emailService.SendEmail(true, stock);
             }
-            else if (price < stock.MinPrice)
+            else if (stock.ActualPrice < stock.BuyPrice)
             {
                 _emailService.SendEmail(false, stock);
             }
