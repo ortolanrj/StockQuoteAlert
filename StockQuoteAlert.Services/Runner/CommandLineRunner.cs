@@ -43,6 +43,8 @@ public class CommandLineRunner : IRunner
         decimal? price = _stockAPIService.GetStockPriceAsync(stock.Ticker).Result;
 
         if (price.HasValue) {
+            stock.ActualPrice = price.Value;
+
             if (price > stock.MaxPrice)
             {
                 _emailService.SendEmail(true, stock);

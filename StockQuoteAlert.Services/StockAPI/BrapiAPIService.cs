@@ -1,9 +1,6 @@
-﻿using System.Net.Http.Json;
-using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using static Google.Apis.Requests.BatchRequest;
 
 namespace StockQuoteAlert.Services.StockAPI
 {
@@ -13,13 +10,21 @@ namespace StockQuoteAlert.Services.StockAPI
 
         private readonly StockAPIOptions _stockAPIOptions;
 
+        private readonly ILogger<BrapiAPIService> _log;
+
         const string BrapiHttpClientName = "BrapiHttpClient";
 
+        const string MessageErrorStockAPIRequest = "Ocurred an error during the Stock API request.";
+
+        const string MessageSuccessStockAPIRequest = "The request to the Stock API was successful.";
+
         public BrapiAPIService(IHttpClientFactory httpClientFactory, 
-                               IOptions<StockAPIOptions> stockAPIOptions)
+                               IOptions<StockAPIOptions> stockAPIOptions,
+                               ILogger<BrapiAPIService> log)
         {
             _httpClientFactory = httpClientFactory;
             _stockAPIOptions = stockAPIOptions.Value;
+            _log = log;
         }
 
         public async Task<decimal?> GetStockPriceAsync(string ticker)
@@ -35,12 +40,15 @@ namespace StockQuoteAlert.Services.StockAPI
 
                 var stringData = await httpResponse.Content.ReadAsStringAsync();
                 var brapiResponse = JsonConvert.DeserializeObject<BrapiAPIResponse>(stringData);
+
+                _log.LogInformation(MessageSuccessStockAPIRequest);
                 return brapiResponse?.Results.First().RegularMarketPrice;
                 
             }
             catch (Exception ex)
             {
-                throw new Exception($"Ocurred an error during the Stock API request.", ex);
+                _log.LogError($"{MessageErrorStockAPIRequest} {ex.Message}");
+                throw new Exception(MessageErrorStockAPIRequest, ex);
             }
         }
     }

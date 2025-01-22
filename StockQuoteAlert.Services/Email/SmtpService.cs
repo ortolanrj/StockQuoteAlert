@@ -2,6 +2,7 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 
 namespace StockQuoteAlert.Services.Email;
 
@@ -38,31 +39,36 @@ public class SmtpService : IEmailService
             smtp.Authenticate(_smtpOptions.Username, _smtpOptions.Password);
             smtp.Send(email);
 
-            _log.LogInformation($"Um email para {Receiver.EmailAdress} foi enviado às {DateTime.Now}.");
+            Console.WriteLine($"Um email para {Receiver.EmailAdress} acabou de ser enviado! O preço da ação {stock.Ticker} ultrapassou o preço alvo.");
+            _log.LogInformation($"An email was sent to {Receiver.EmailAdress}.");
             
             smtp.Disconnect(true);
         }
     }
 
-    private MimeMessage BuildEmailMessage(bool overResistance, Stock stock)
+    private MimeMessage BuildEmailMessage(bool overSellPrice, Stock stock)
     {
         var email = new MimeMessage();
 
         email.From.Add(new MailboxAddress(Sender.Name, Sender.EmailAdress));
         email.To.Add(new MailboxAddress(Receiver.Name, Receiver.EmailAdress));
 
-        var resistanceOrSupport = overResistance
-                                    ? "a resistência" 
-                                    : "o suporte";
+        var sellOrBuyPrice = overSellPrice
+                                    ? "o preço de venda" 
+                                    : "o preço de compra";
 
-        var subject = $"Atenção! O preço da ação rompeu {resistanceOrSupport}.";
+        var subject = $"Atenção! A ação rompeu {sellOrBuyPrice}.";
+
+        var formattedAmount = stock.ActualPrice.ToString("C2", new CultureInfo("pt-BR"));
 
         email.Subject = subject;
 
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
-            Text = $"<b>O preço da ação {stock.Ticker} rompeu {resistanceOrSupport}.</b><br>" +
-                   $"Recomendamos a respectiva {(overResistance ? "venda" : "compra")} do ativo."
+            Text = $"Olá! <br>Percebemos que a ação {stock.Ticker} ultrapassou {sellOrBuyPrice}.<br>" +
+                   $"Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>" +
+                   $"O preço da ação hoje está em {formattedAmount}.<br><br>" +
+                   $"Tenha um bom dia!"
         };
 
         return email;

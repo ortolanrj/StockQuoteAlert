@@ -14,10 +14,12 @@ builder.SetBasePath(Directory.GetCurrentDirectory())
 
 var configuration = builder.Build();
 
+
+// Configuring logging to stay in "/logs/log-DateOfDay.txt"
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 var host = Host.CreateDefaultBuilder()
