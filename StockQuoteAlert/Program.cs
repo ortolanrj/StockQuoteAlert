@@ -36,6 +36,7 @@ var host = Host.CreateDefaultBuilder()
 
         services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
         services.Configure<EmailOptions>(configuration.GetSection("Email"));
+        services.Configure<StockAPIOptions>(configuration.GetSection("BrapiApi"));
     })
     .UseSerilog()
     .Build();

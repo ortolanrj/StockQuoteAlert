@@ -1,5 +1,9 @@
 ﻿using System.Net.Http.Json;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace StockQuoteAlert.Services.StockAPI
 {
@@ -7,22 +11,37 @@ namespace StockQuoteAlert.Services.StockAPI
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly IConfiguration _config;
+        private readonly StockAPIOptions _stockAPIOptions;
 
-        public BrapiAPIService(IHttpClientFactory httpClientFactory, IConfiguration config)
+        const string BrapiHttpClientName = "BrapiHttpClient";
+
+        public BrapiAPIService(IHttpClientFactory httpClientFactory, 
+                               IOptions<StockAPIOptions> stockAPIOptions)
         {
             _httpClientFactory = httpClientFactory;
-            _config = config;
+            _stockAPIOptions = stockAPIOptions.Value;
         }
 
-        public async Task<decimal> GetStockPriceAsync(string ticker)
+        public async Task<decimal?> GetStockPriceAsync(string ticker)
         {
-            var client = _httpClientFactory.CreateClient("BrapiHttpClient");
-            var token = _config.GetValue<string>("BrapiApi:Key");
+            var client = _httpClientFactory.CreateClient(BrapiHttpClientName);
+            var token = _stockAPIOptions.Key;
 
-            var response = await client.GetFromJsonAsync<BrapiAPIResponse>($"{ticker}?token={token}");
+            try
+            {
+                var httpResponse = await client.GetAsync($"{ticker}?token={token}");
+             
+                httpResponse.EnsureSuccessStatusCode(); 
 
-            return response.Results.First().RegularMarketPrice;
+                var stringData = await httpResponse.Content.ReadAsStringAsync();
+                var brapiResponse = JsonConvert.DeserializeObject<BrapiAPIResponse>(stringData);
+                return brapiResponse?.Results.First().RegularMarketPrice;
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ocurred an error during the Stock API request.", ex);
+            }
         }
     }
 }

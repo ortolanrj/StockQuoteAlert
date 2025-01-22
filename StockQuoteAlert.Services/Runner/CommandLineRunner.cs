@@ -8,6 +8,8 @@ public class CommandLineRunner : IRunner
 
     private readonly IEmailService _emailService;
 
+    private const int TimeInterval = 30;
+
     public CommandLineRunner(IStockAPIService stockAPIService, IEmailService emailService)
     {
         _stockAPIService = stockAPIService;
@@ -29,7 +31,7 @@ public class CommandLineRunner : IRunner
 
     private void RunFromTimeToTime(Stock stock)
     {
-        Timer timer = new Timer(state => CheckPriceAndSendEmail(stock), null, TimeSpan.Zero, TimeSpan.FromMinutes(30));
+        Timer timer = new Timer(state => CheckPriceAndSendEmail(stock), null, TimeSpan.Zero, TimeSpan.FromMinutes(TimeInterval));
 
         // Gives the user an option to close the program
         Console.WriteLine("Pressione qualquer tecla para encerrar o programa.");
@@ -38,15 +40,20 @@ public class CommandLineRunner : IRunner
 
     private void CheckPriceAndSendEmail(Stock stock)
     {
-        decimal price = _stockAPIService.GetStockPriceAsync(stock.Ticker).Result;
+        decimal? price = _stockAPIService.GetStockPriceAsync(stock.Ticker).Result;
 
-        if (price > stock.MaxPrice)
+        if (price.HasValue) {
+            if (price > stock.MaxPrice)
+            {
+                _emailService.SendEmail(true, stock);
+            }
+            else if (price < stock.MinPrice)
+            {
+                _emailService.SendEmail(false, stock);
+            }
+        } else
         {
-            _emailService.SendEmail(true, stock);
-        }
-        else if (price < stock.MinPrice)
-        {
-            _emailService.SendEmail(false, stock);
+            throw new Exception("Ocurred an error in the API call response.");
         }
     }
 }

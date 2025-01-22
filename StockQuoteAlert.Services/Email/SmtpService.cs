@@ -9,23 +9,23 @@ public class SmtpService : IEmailService
 {
     private readonly ILogger<SmtpService> _log;
 
-    private readonly IOptions<SmtpOptions> _smtpOptions;
+    private readonly SmtpOptions _smtpOptions;
 
-    private readonly IOptions<EmailOptions> _emailOptions;
+    private readonly EmailOptions _emailOptions;
 
-    private readonly EmailAccount sender;
+    private readonly EmailAccount Sender;
 
-    private readonly EmailAccount receiver;
+    private readonly EmailAccount Receiver;
 
     public SmtpService(ILogger<SmtpService> log, 
-                            IOptions<SmtpOptions> smtpOptions, 
-                            IOptions<EmailOptions> emailOptions)
+                       IOptions<SmtpOptions> smtpOptions, 
+                       IOptions<EmailOptions> emailOptions)
     {
         _log = log;
-        _smtpOptions = smtpOptions;
-        _emailOptions = emailOptions;
-        sender = new EmailAccount(_emailOptions.Value.Sender.Name, _emailOptions.Value.Sender.Address);
-        receiver = new EmailAccount(_emailOptions.Value.Receiver.Name, _emailOptions.Value.Receiver.Address);
+        _smtpOptions = smtpOptions.Value;
+        _emailOptions = emailOptions.Value;
+        Sender = new EmailAccount(_emailOptions.Sender.Name, _emailOptions.Sender.Address);
+        Receiver = new EmailAccount(_emailOptions.Receiver.Name, _emailOptions.Receiver.Address);
     }
 
     public void SendEmail(bool overResistance, Stock stock)
@@ -34,11 +34,11 @@ public class SmtpService : IEmailService
 
         using (var smtp = new SmtpClient())
         {
-            smtp.Connect(_smtpOptions.Value.Host, _smtpOptions.Value.Port, false);
-            smtp.Authenticate(_smtpOptions.Value.Username, _smtpOptions.Value.Password);
+            smtp.Connect(_smtpOptions.Host, _smtpOptions.Port, false);
+            smtp.Authenticate(_smtpOptions.Username, _smtpOptions.Password);
             smtp.Send(email);
 
-            _log.LogInformation($"Um email para {receiver.EmailAdress} foi enviado às {DateTime.Now}.");
+            _log.LogInformation($"Um email para {Receiver.EmailAdress} foi enviado às {DateTime.Now}.");
             
             smtp.Disconnect(true);
         }
@@ -48,8 +48,8 @@ public class SmtpService : IEmailService
     {
         var email = new MimeMessage();
 
-        email.From.Add(new MailboxAddress(sender.Name, sender.EmailAdress));
-        email.To.Add(new MailboxAddress(receiver.Name, receiver.EmailAdress));
+        email.From.Add(new MailboxAddress(Sender.Name, Sender.EmailAdress));
+        email.To.Add(new MailboxAddress(Receiver.Name, Receiver.EmailAdress));
 
         var resistanceOrSupport = overResistance
                                     ? "a resistência" 

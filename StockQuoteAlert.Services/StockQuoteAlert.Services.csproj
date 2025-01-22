@@ -18,5 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\StockQuoteAlert.Models\StockQuoteAlert.Models.csproj" />
   </ItemGroup>
-
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+	<DebugSymbols>False</DebugSymbols>
+	<DebugType>None</DebugType>
+  </PropertyGroup>
 </Project>
