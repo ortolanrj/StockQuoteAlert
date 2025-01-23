@@ -1,0 +1,43 @@
+name: "Deploy Stock Quote Alerts"
+
+on: 
+  push:
+    tags:
+      - "stock-quote-alert/v*"
+env:
+  PUB_XML_PATH: Properties/PublishProfiles/FolderProfile.pubxml
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up .NET sdk
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      - name: Build application
+        run: dotnet build --configuration Release
+      
+      - name: Publish application
+        run: dotnet publish -c Release -o publish -r win-x64  --self-contained /p:PublishProfile=${{ env.PUB_XML_PATH }}
+
+      - name: Create .zip file
+        run: |
+          powershell Compress-Archive -Path publish\*.exe, publish\*.json -DestinationPath release.zip
+
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
