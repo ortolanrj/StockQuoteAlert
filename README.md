@@ -3,9 +3,9 @@
 ## Description
 
 This is a challenge for Inoa interview process. The project consists in a stock quote alert system. You
-choose an stock ticker, for example 'PETR4', and a maximum and minimum price. The goal of the system is to
-send an email recommending you to buy or sell, always when the price of the stock goes above the maximum price, 
-or under the minimum price.
+choose an stock ticker, for example 'PETR4', and a Sell and Buy price. The goal of the system is to
+send an email recommending you to sell, always when the price of the stock goes above the Sell price, 
+and to buy if the price goes under the Buy price.
 
 ## Technical aspects
 
