@@ -78,7 +78,7 @@ public class SmtpService : IEmailService
 
         var htmlContent = Utils.emailTemplate;
 
-        var mailMessage = $@"<p>Olá!</p> <br>Percebemos que a ação {stock.Ticker} ultrapassou o {sellOrBuyPrice}.<br>
+        var mailMessage = $@"<p>Olá!</p> <br>Percebemos que a ação {stock.Ticker} {(overSellPrice ? "ultrapassou o" : "ficou abaixo do")} {sellOrBuyPrice}.<br>
                              <p>Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>
                              O preço da ação agora está em <b>{formattedAmount}</b>.</p><br>
                              <p>Tenha um bom dia!</p>";
