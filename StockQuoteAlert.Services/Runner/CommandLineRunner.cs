@@ -32,7 +32,7 @@ public class CommandLineRunner : IRunner
     {
         string[] args = Environment.GetCommandLineArgs();
 
-        if (args.Length <= 1)
+        if (args.Length <= 2)
         {
             Console.WriteLine(MessageProblemCmdArguments);
             return;
