@@ -54,7 +54,7 @@ public class SmtpService : IEmailService
         email.To.Add(new MailboxAddress(Receiver.Name, Receiver.EmailAdress));
 
         var sellOrBuyPrice = overSellPrice
-                                    ? "o preço de venda" 
+                                    ? "o preço de venda"
                                     : "o preço de compra";
 
         var subject = $"Atenção! A ação {stock.Ticker} rompeu {sellOrBuyPrice}.";
@@ -64,12 +64,16 @@ public class SmtpService : IEmailService
 
         email.Subject = subject;
 
+        string htmlContent = Utils.emailTemplate;
+
+        var mailMessage = $@"<p>Olá!</p> <br>Percebemos que a ação {stock.Ticker} ultrapassou {sellOrBuyPrice}.<br>
+                             <p>Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>
+                             O preço da ação agora está em <b>{formattedAmount}</b>.</p><br>
+                             <p>Tenha um bom dia!</p>";
+
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
-            Text = $"<p>Olá!</p> <br>Percebemos que a ação {stock.Ticker} ultrapassou {sellOrBuyPrice}.<br>" +
-                   $"<p>Recomendamos a respectiva {(overSellPrice ? "venda" : "compra")} do ativo.<br>" +
-                   $"O preço da ação agora está em {formattedAmount}.</p><br>" +
-                   $"<p>Tenha um bom dia!</p>"
+            Text = htmlContent.Replace("{mailMessage}", mailMessage)
         };
 
         return email;
