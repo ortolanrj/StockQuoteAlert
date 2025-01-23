@@ -1,11 +1,11 @@
 ﻿public class BrapiAPIResponse
 {
-    public Result[] Results { get; set; }
-    public DateTime RequestedAt { get; set; }
-    public string Took { get; set; }
+    public required Result[] Results { get; set; }
+    public required DateTime RequestedAt { get; set; }
+    public required string Took { get; set; }
 }
 
 public class Result
 {
-    public decimal RegularMarketPrice { get; set; }
+    public required decimal RegularMarketPrice { get; set; }
 }

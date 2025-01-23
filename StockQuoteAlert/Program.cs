@@ -29,7 +29,7 @@ var host = Host.CreateDefaultBuilder()
         // Configuring an instance of a HttpClient for the Brapi Stock API
         services.AddHttpClient("BrapiHttpClient", httpClient =>
         {
-            httpClient.BaseAddress = new Uri(configuration.GetValue<string>("BrapiApi:BaseURL"));
+           httpClient.BaseAddress = new Uri(configuration.GetValue<string>("BrapiApi:BaseURL")!);
         });
 
         services.AddSingleton<IEmailService, SmtpService>();

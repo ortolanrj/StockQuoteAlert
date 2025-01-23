@@ -13,7 +13,7 @@ public class CommandLineRunner : IRunner
 
     private const string MessageProblemFinanceInstrumentSearch = "Houve um problema na busca do preço do ativo.";
     
-    private const string MessageProblemaCmdArguments = "Por favor, utilize os parâmetros no seguinte formato:\n " +
+    private const string MessageProblemCmdArguments = "Por favor, utilize os parâmetros no seguinte formato:\n " +
                                                        "> .\\stock-quote-alert.exe <TICKER> <PRECO-VENDA> <PRECO-COMPRA>. Ex.: PETR4 22.67 22.59";
 
     private const string MessagePriceNotAboveOrUnderLimits = "Não houve variação do preço acima ou abaixo dos limites estabelecidos.";
@@ -32,14 +32,19 @@ public class CommandLineRunner : IRunner
     {
         string[] args = Environment.GetCommandLineArgs();
 
-        var ticker = args[1];
+        if (args.Length <= 1)
+        {
+            Console.WriteLine(MessageProblemCmdArguments);
+            return;
+        }
 
+        var ticker = args[1];
         var sellPriceSuccess = Decimal.TryParse(args[2], new CultureInfo("en-US"), out var sellPrice);
         var buyPriceSuccess = Decimal.TryParse(args[3], new CultureInfo("en-US"), out var buyPrice);
 
         if (!sellPriceSuccess || !buyPriceSuccess)
         {
-            Console.WriteLine(MessageProblemaCmdArguments);
+            Console.WriteLine(MessageProblemCmdArguments);
             return;
         }
 
