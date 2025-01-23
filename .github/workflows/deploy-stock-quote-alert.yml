@@ -26,14 +26,15 @@ jobs:
         run: dotnet restore
 
       - name: Build application
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --no-restore
       
       - name: Publish application
         run: dotnet publish -c Release -o publish -r win-x64  --self-contained /p:PublishProfile=${{ env.PUB_XML_PATH }}
 
       - name: Create .zip file
         run: |
-          powershell Compress-Archive -Path publish\*.exe, publish\*.json -DestinationPath release.zip
+          powershell Rename-Item -Path publish\StockQuoteAlert.exe -NewName stock-quote-alert.exe
+          powershell Compress-Archive -Path publish\stock-quote-alert.exe, publish\appsettings.json, publish\appsettings.user.json -DestinationPath release.zip
 
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
